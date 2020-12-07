@@ -17,6 +17,7 @@ Functionality included in this extension:
 
 ### Prerequisites
 * Acumatica 2020 R1 (20.103.0019 or higher)
+* Acumatica 2020 R2 (20.202.0043 or higher)
 
 Quick Start
 -----------
