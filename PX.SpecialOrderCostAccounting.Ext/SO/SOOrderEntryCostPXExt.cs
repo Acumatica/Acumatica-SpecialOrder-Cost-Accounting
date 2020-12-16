@@ -8,7 +8,12 @@ using System.Collections;
 namespace PX.SpecialOrderCostAccounting.Ext
 {
     public class SOOrderEntryCostPXExt : PXGraphExtension<SOOrderEntry>
-    { 
+    {
+        public override void Initialize()
+        {
+            PXUIFieldAttribute.SetVisible<SOLine.curyUnitCost>(Base.Transactions.Cache, null, true);
+        }
+
         [PXMergeAttributes(Method = MergeMethod.Merge)]
         [PXDefault(typeof(Switch<Case<Where<Selector<SOLine.inventoryID, InventoryItemCostPXExt.usrIsSpecialOrderItem>, IsNotNull>,
                                              Selector<SOLine.inventoryID, InventoryItemCostPXExt.usrIsSpecialOrderItem>>, False>))]
@@ -42,8 +47,11 @@ namespace PX.SpecialOrderCostAccounting.Ext
             bool isPOCreateAndSpecialOrder = (soline.POCreate.GetValueOrDefault(false) && solineExt.UsrIsSpecialOrderItem.GetValueOrDefault(false));
             bool isPOCreated = soline.POCreated.GetValueOrDefault(false);
 
-            PXUIFieldAttribute.SetVisible<SOLine.curyUnitCost>(Base.Transactions.Cache, soline, isPOCreateAndSpecialOrder);
-            PXUIFieldAttribute.SetEnabled<SOLine.curyUnitCost>(Base.Transactions.Cache, soline, isPOCreateAndSpecialOrder && !isPOCreated);
+            if (solineExt.UsrIsSpecialOrderItem.GetValueOrDefault(false))
+            {
+                PXUIFieldAttribute.SetEnabled<SOLine.curyUnitCost>(Base.Transactions.Cache, soline, isPOCreateAndSpecialOrder && !isPOCreated);
+            }
+
             PXUIFieldAttribute.SetEnabled<SOLine.orderQty>(Base.Transactions.Cache, soline, !isPOCreated);
         }
 
