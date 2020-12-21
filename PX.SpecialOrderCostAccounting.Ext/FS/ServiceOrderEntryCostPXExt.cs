@@ -8,6 +8,12 @@ namespace PX.SpecialOrderCostAccounting.Ext
 {
     public class ServiceOrderEntryCostPXExt : PXGraphExtension<ServiceOrderEntry>
     {
+        [PXMergeAttributes(Method = MergeMethod.Merge)]
+        [PXDefault(typeof(Switch<Case<Where<Selector<FSSODet.inventoryID, InventoryItemCostPXExt.usrIsSpecialOrderItem>, IsNotNull>,
+                                            Selector<FSSODet.inventoryID, InventoryItemCostPXExt.usrIsSpecialOrderItem>>, False>))]
+        [PXFormula(typeof(Default<FSSODet.inventoryID>))]
+        protected virtual void _(Events.CacheAttached<FSSODet.manualCost> e) { }
+
         protected virtual void _(Events.FieldDefaulting<FSSODet, FSSODet.enablePO> e, PXFieldDefaulting BaseInvoke)
         {
             if (BaseInvoke != null) { BaseInvoke(e.Cache, e.Args); }
