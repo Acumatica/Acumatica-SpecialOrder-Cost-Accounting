@@ -471,9 +471,10 @@ namespace PX.SpecialOrderCostAccounting.Ext
 
                 using (PXTransactionScope ts = new PXTransactionScope())
                 {
+                    basePersist();
+
                     if (soOrders.Count > 0 && itemsforupdate.Count > 0) { UpdateLinkedSOAndServiceOrder(itemsforupdate, soOrders); }
                     if (Base.Transactions.Cache.Deleted.Count() > 0) { ClearPORerencesFromServiceLineForFreight(Base.Transactions.Cache.Deleted); }                 
-                    basePersist();
                     ts.Complete();
                 }
             }
