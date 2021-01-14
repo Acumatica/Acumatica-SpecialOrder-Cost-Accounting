@@ -51,19 +51,17 @@ namespace PX.SpecialOrderCostAccounting.Ext
             // Copy Vendor Cost from Sales Order to Purchase Order
             if (solinesplit != null && solinesplit.POCreate.GetValueOrDefault(false))
             {
-                InventoryItem item = (InventoryItem)PXSelectorAttribute.Select<SOLineSplit3.inventoryID>(Base.FixedDemand.Cache, solinesplit);
+                InventoryItem item = InventoryItem.PK.Find(Base, solinesplit?.InventoryID);
+
                 if (item?.ValMethod == INValMethod.Average)
                 {
                     InventoryItemCostPXExt itemExt = PXCache<InventoryItem>.GetExtension<InventoryItemCostPXExt>(item);
 
                     if (itemExt.UsrIsSpecialOrderItem.GetValueOrDefault(false))
                     {
-                        SOLine soData = PXSelect<SOLine, Where<SOLine.lineNbr, Equal<Required<SOLine.lineNbr>>,
-                                                            And<SOLine.orderType, Equal<Required<SOLine.orderType>>,
-                                                            And<SOLine.orderNbr, Equal<Required<SOLine.orderNbr>>,
-                                                            And<SOLine.pOSource, Equal<INReplenishmentSource.purchaseToOrder>>>>>>.
-                                                            Select(Base, solinesplit.LineNbr, solinesplit.OrderType, solinesplit.OrderNbr);
-                        if (soData != null)
+                        SOLine soData = SOLine.PK.Find(Base, solinesplit.OrderType, solinesplit.OrderNbr, solinesplit.LineNbr);
+                        if (soData != null && 
+                            (soData.POSource == INReplenishmentSource.PurchaseToOrder || soData.POSource == INReplenishmentSource.DropShipToOrder))
                         {
                             dest.CuryUnitCost = soData.CuryUnitCost;
                         }
