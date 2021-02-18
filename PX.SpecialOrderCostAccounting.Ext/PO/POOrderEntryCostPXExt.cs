@@ -594,7 +594,7 @@ namespace PX.SpecialOrderCostAccounting.Ext
                         {
                             POLineCostPXExt polineExt = PXCache<POLine>.GetExtension<POLineCostPXExt>(poline);
                             FSSODet fsoLineforUpdate = (FSSODet)FixedDemandViaServiceOrderForCostUpdate.Select(poline.OrderType, poline.OrderNbr, poline.LineNbr);
-                            if (!(fsoLineforUpdate.SrvOrdType?.Trim() == soType && fsoLineforUpdate.RefNbr?.Trim() == soNbr)) { continue; }
+                            if (!(fsoLineforUpdate?.SrvOrdType?.Trim() == soType && fsoLineforUpdate?.RefNbr?.Trim() == soNbr)) { continue; }
                             if (fsoLineforUpdate == null && !polineExt.UsrIsFreight.GetValueOrDefault(false)) { continue; }
                             if (fsoLineforUpdate == null && polineExt.UsrIsFreight.GetValueOrDefault(false))
                             {
