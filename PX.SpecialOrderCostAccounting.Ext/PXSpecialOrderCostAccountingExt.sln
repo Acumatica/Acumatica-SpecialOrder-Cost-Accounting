@@ -3,7 +3,29 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30104.148
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PX.SpecialOrderCostAccounting.Ext", "PX.SpecialOrderCostAccounting.Ext.csproj", "{39CDDFF0-BC4B-4903-BE93-F196A1AE1BED}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PX.SpecialOrderCostAccounting.Ext", "PX.SpecialOrderCostAccounting.Ext.csproj", "{39CDDFF0-BC4B-4903-BE93-F196A1AE1BED}"
+EndProject
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "AcmLineCost20R213", "http://localhost/AcmLineCost20R213", "{0DA7141C-A047-4EAC-815E-CBC417F35CD5}"
+	ProjectSection(WebsiteProperties) = preProject
+		UseIISExpress = "false"
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.8"
+		ProjectReferences = "{39cddff0-bc4b-4903-be93-f196a1ae1bed}|PX.SpecialOrderCostAccounting.Ext.dll;"
+		Debug.AspNetCompiler.VirtualPath = "/AcmLineCost20R213"
+		Debug.AspNetCompiler.PhysicalPath = "..\..\..\..\Program Files (x86)\Acumatica ERP\AcmLineCost20R213\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\AcmLineCost20R213\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/AcmLineCost20R213"
+		Release.AspNetCompiler.PhysicalPath = "..\..\..\..\Program Files (x86)\Acumatica ERP\AcmLineCost20R213\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\AcmLineCost20R213\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		SlnRelativePath = "..\..\..\..\Program Files (x86)\Acumatica ERP\AcmLineCost20R213\"
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,14 +33,13 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{4AAC5EA5-401F-4B89-82A6-F38F8079196F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4AAC5EA5-401F-4B89-82A6-F38F8079196F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4AAC5EA5-401F-4B89-82A6-F38F8079196F}.Release|Any CPU.ActiveCfg = Debug|Any CPU
-		{4AAC5EA5-401F-4B89-82A6-F38F8079196F}.Release|Any CPU.Build.0 = Debug|Any CPU
 		{39CDDFF0-BC4B-4903-BE93-F196A1AE1BED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{39CDDFF0-BC4B-4903-BE93-F196A1AE1BED}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{39CDDFF0-BC4B-4903-BE93-F196A1AE1BED}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{39CDDFF0-BC4B-4903-BE93-F196A1AE1BED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0DA7141C-A047-4EAC-815E-CBC417F35CD5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0DA7141C-A047-4EAC-815E-CBC417F35CD5}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{0DA7141C-A047-4EAC-815E-CBC417F35CD5}.Release|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

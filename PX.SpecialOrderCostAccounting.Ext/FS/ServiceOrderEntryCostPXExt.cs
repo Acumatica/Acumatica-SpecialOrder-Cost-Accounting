@@ -39,11 +39,12 @@ namespace PX.SpecialOrderCostAccounting.Ext
 
             FSSODetCostPXExt fsolineExt = PXCache<FSSODet>.GetExtension<FSSODetCostPXExt>(fsoline);
 
-            if (fsolineExt.UsrIsSpecialOrderItem.GetValueOrDefault(false) && (fsoline.POSource == INReplenishmentSource.PurchaseToOrder))
+            if (fsolineExt.UsrIsSpecialOrderItem.GetValueOrDefault(false) && !String.IsNullOrEmpty(fsoline.POSource))
             {
-                // Disable editing if PO is created and is Purchase to Order
-                PXUIFieldAttribute.SetEnabled<FSSODet.curyUnitCost>(Base.ServiceOrderDetails.Cache, fsoline, (String.IsNullOrEmpty(fsoline.PONbr)));
-                PXUIFieldAttribute.SetEnabled<FSSODet.estimatedQty>(Base.ServiceOrderDetails.Cache, fsoline, (String.IsNullOrEmpty(fsoline.PONbr)));
+                // Disable editing if PO is created or there's appointment
+                bool bEnable = (String.IsNullOrEmpty(fsoline.PONbr) && (fsoline.ApptCntr.GetValueOrDefault(0) == 0));
+                PXUIFieldAttribute.SetEnabled<FSSODet.curyUnitCost>(Base.ServiceOrderDetails.Cache, fsoline, bEnable);
+                PXUIFieldAttribute.SetEnabled<FSSODet.estimatedQty>(Base.ServiceOrderDetails.Cache, fsoline, bEnable);
             }
         }
     }

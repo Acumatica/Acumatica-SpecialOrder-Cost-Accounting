@@ -1,4 +1,5 @@
-﻿using PX.Data;
+﻿using System;
+using PX.Data;
 using PX.Objects.SO;
 using PX.Objects.IN;
 using PX.Objects.AR;
@@ -34,26 +35,39 @@ namespace PX.SpecialOrderCostAccounting.Ext
                     if (arData != null)
                     {
                         FSxARTran arDataExt = PXCache<ARTran>.GetExtension<FSxARTran>(arData);
-                        if (arDataExt != null)
-                        {
-                            PXResult<POLine, FSSODet> datainfo = (PXResult<POLine, FSSODet>)
+
+                        PXResult<POLine, FSSODet> datainfo = (PXResult<POLine, FSSODet>)
                                                                  PXSelectJoin<POLine, InnerJoin<FSSODet, On<FSSODet.poLineNbr, Equal<POLine.lineNbr>,
                                                                                         And<FSSODet.poType, Equal<POLine.orderType>,
                                                                                         And<FSSODet.poNbr, Equal<POLine.orderNbr>>>>>,
                                                                                       Where<FSSODet.sODetID, Equal<Required<FSSODet.sODetID>>,
-                                                                                        And<FSSODet.pOSource, Equal<INReplenishmentSource.purchaseToOrder>,
-                                                                                        And<FSSODet.sOID, Equal<Required<FSSODet.sOID>>>>>>.
+                                                                                        And<FSSODet.sOID, Equal<Required<FSSODet.sOID>>>>>.
                                                                                         Select(Base, arDataExt.SODetID, arDataExt.SOID);
-                            POLine poData = datainfo;
-                            FSSODet fssoData = datainfo;
-                            if (poData != null)
+                        if (datainfo == null) { return; }
+
+                        POLine poData = datainfo;
+                        FSSODet fssoData = datainfo;
+
+                        INTranCostPXExt dataExt = PXCache<INTran>.GetExtension<INTranCostPXExt>(data);
+                        dataExt.UsrSpecialOrderCost = true;
+                        data.UnitCost = poData.UnitCost;
+
+                        // PO Source is Service Order 
+                        if (fssoData.POSource == ListField_FSPOSource.PurchaseToServiceOrder)
+                        {
+                            //Copy Line service order line notes to issue document line
+                            PXNoteAttribute.CopyNoteAndFiles(docgraph.Caches[typeof(FSSODet)], fssoData, sender, data, true, false);
+                        }
+                        else if (fssoData.POSource == ListField_FSPOSource.PurchaseToAppointment)
+                        {
+                            FSAppointmentDet fssoAptData = PXSelect<FSAppointmentDet,
+                                                                Where<FSAppointmentDet.appDetID, Equal<Required<FSAppointmentDet.appDetID>>,
+                                                                    And<FSAppointmentDet.appointmentID, Equal<Required<FSAppointmentDet.appointmentID>>>>>.
+                                                                    SelectWindowed(Base, 0, 1, arDataExt.AppDetID, arDataExt.AppointmentID);
+                            if (fssoAptData != null)
                             {
-                                INTranCostPXExt dataExt = PXCache<INTran>.GetExtension<INTranCostPXExt>(data);
-                                dataExt.UsrSpecialOrderCost = true;
-                                data.UnitCost = poData.UnitCost;
-                                
-                                //Copy Line service order line notes to issue document line
-                                PXNoteAttribute.CopyNoteAndFiles(docgraph.Caches[typeof(FSSODet)], fssoData, sender, data, true, false);
+                                //Copy Appointment line notes to issue document line
+                                PXNoteAttribute.CopyNoteAndFiles(docgraph.Caches[typeof(FSAppointmentDet)], fssoAptData, sender, data, true, false);
                             }
                         }
                     }

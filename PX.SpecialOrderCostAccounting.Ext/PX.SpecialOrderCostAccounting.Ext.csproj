@@ -4,16 +4,16 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="PX.Common">
-      <HintPath>C:\Program Files (x86)\Acumatica ERP\EasyPost2020R1\Bin\PX.Common.dll</HintPath>
+      <HintPath>C:\Program Files (x86)\Acumatica ERP\AcmLineCost20R213\Bin\PX.Common.dll</HintPath>
     </Reference>
     <Reference Include="PX.Data">
-      <HintPath>C:\Program Files (x86)\Acumatica ERP\EasyPost2020R1\Bin\PX.Data.dll</HintPath>
+      <HintPath>C:\Program Files (x86)\Acumatica ERP\AcmLineCost20R213\Bin\PX.Data.dll</HintPath>
     </Reference>
     <Reference Include="PX.Objects">
-      <HintPath>C:\Program Files (x86)\Acumatica ERP\EasyPost2020R1\Bin\PX.Objects.dll</HintPath>
+      <HintPath>C:\Program Files (x86)\Acumatica ERP\AcmLineCost20R213\Bin\PX.Objects.dll</HintPath>
     </Reference>
     <Reference Include="PX.Objects.FS">
-      <HintPath>C:\Program Files (x86)\Acumatica ERP\EasyPost2020R1\Bin\PX.Objects.FS.dll</HintPath>
+      <HintPath>C:\Program Files (x86)\Acumatica ERP\AcmLineCost20R213\Bin\PX.Objects.FS.dll</HintPath>
     </Reference>
   </ItemGroup>
 </Project>

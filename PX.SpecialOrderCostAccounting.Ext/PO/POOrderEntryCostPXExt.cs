@@ -21,6 +21,12 @@ namespace PX.SpecialOrderCostAccounting.Ext
                 And<FSSODet.poLineNbr, Equal<Optional<POLine.lineNbr>>>>>> FixedDemandViaServiceOrderForCostUpdate;
 
         [PXCopyPasteHiddenView]
+        public PXSelectJoin<FSAppointmentDet, InnerJoin<FSSODet, On<FSSODet.sODetID, Equal<FSAppointmentDet.sODetID>>>,
+            Where<FSSODet.poType, Equal<Optional<POLine.orderType>>,
+                And<FSSODet.poNbr, Equal<Optional<POLine.orderNbr>>,
+                And<FSSODet.poLineNbr, Equal<Optional<POLine.lineNbr>>>>>> FixedDemandViaServiceOrderApptForCostUpdate;
+
+        [PXCopyPasteHiddenView]
         public PXSelect<SOLine, Where<SOLine.orderType, Equal<Optional<SOLine.orderType>>,
                 And<SOLine.orderNbr, Equal<Optional<SOLine.orderNbr>>,
                 And<SOLine.lineNbr, Equal<Optional<SOLine.lineNbr>>>>>> SOLineLinkForCostUpdate;
@@ -125,12 +131,28 @@ namespace PX.SpecialOrderCostAccounting.Ext
             else if (poline.LineType == POLineType.GoodsForServiceOrder || poline.LineType == POLineType.NonStockForServiceOrder) 
             {
                 FSSODet fsoLineforUpdate = (FSSODet)FixedDemandViaServiceOrderForCostUpdate.Select(poline.OrderType, poline.OrderNbr, poline.LineNbr);
-                if (fsoLineforUpdate == null || fsoLineforUpdate.POSource != INReplenishmentSource.PurchaseToOrder) { return; }
+                if (fsoLineforUpdate == null) { return; }
 
-                if (Base.Transactions.View.Ask(poline, PX.Objects.AP.Messages.Warning,
-                                                Messages.ChangingCostForLinkedRecordFSO, MessageButtons.YesNo, MessageIcon.Question) == WebDialogResult.No)
+                if (fsoLineforUpdate.POSource == ListField_FSPOSource.PurchaseToServiceOrder)
                 {
-                    e.NewValue = poline.CuryUnitCost;
+                    if (fsoLineforUpdate.ApptCntr.GetValueOrDefault(0) > 0)
+                    {
+                        throw new PXSetPropertyException<POLine.curyUnitCost>(Messages.POOrderCostUpdateNotAllowed, PXErrorLevel.Error);
+                    }
+
+                    if (Base.Transactions.View.Ask(poline, PX.Objects.AP.Messages.Warning,
+                                                    Messages.ChangingCostForLinkedRecordFSO, MessageButtons.YesNo, MessageIcon.Question) == WebDialogResult.No)
+                    {
+                        e.NewValue = poline.CuryUnitCost;
+                    }
+                }
+                else if (fsoLineforUpdate.POSource == ListField_FSPOSource.PurchaseToAppointment)
+                {
+                    if (Base.Transactions.View.Ask(poline, PX.Objects.AP.Messages.Warning,
+                                                    Messages.ChangingCostForLinkedRecordFSOAppt, MessageButtons.YesNo, MessageIcon.Question) == WebDialogResult.No)
+                    {
+                        e.NewValue = poline.CuryUnitCost;
+                    }
                 }
             }
         }
@@ -166,12 +188,28 @@ namespace PX.SpecialOrderCostAccounting.Ext
             else if (poline.LineType == POLineType.GoodsForServiceOrder || poline.LineType == POLineType.NonStockForServiceOrder)
             {
                 FSSODet fsoLineforUpdate = (FSSODet)FixedDemandViaServiceOrderForCostUpdate.Select(poline.OrderType, poline.OrderNbr, poline.LineNbr);
-                if (fsoLineforUpdate == null || fsoLineforUpdate.POSource != INReplenishmentSource.PurchaseToOrder) { return; }
+                if (fsoLineforUpdate == null) { return; }
 
-                if (Base.Transactions.View.Ask(poline, PX.Objects.AP.Messages.Warning,
-                                                Messages.ChangingQtyForLinkedRecordFSO, MessageButtons.YesNo, MessageIcon.Question) == WebDialogResult.No)
+                if (fsoLineforUpdate.POSource == ListField_FSPOSource.PurchaseToServiceOrder)
                 {
-                    e.NewValue = poline.OrderQty;
+                    if (fsoLineforUpdate.ApptCntr.GetValueOrDefault(0) > 0)
+                    {
+                        throw new PXSetPropertyException<POLine.orderQty>(Messages.POOrderQtyUpdateNotAllowed, PXErrorLevel.Error);
+                    }
+
+                    if (Base.Transactions.View.Ask(poline, PX.Objects.AP.Messages.Warning,
+                                                Messages.ChangingQtyForLinkedRecordFSO, MessageButtons.YesNo, MessageIcon.Question) == WebDialogResult.No)
+                    {
+                        e.NewValue = poline.OrderQty;
+                    }
+                }
+                else if (fsoLineforUpdate.POSource == ListField_FSPOSource.PurchaseToAppointment)
+                {
+                    if (Base.Transactions.View.Ask(poline, PX.Objects.AP.Messages.Warning,
+                                                Messages.ChangingQtyForLinkedRecordFSOAppt, MessageButtons.YesNo, MessageIcon.Question) == WebDialogResult.No)
+                    {
+                        e.NewValue = poline.OrderQty;
+                    }
                 }
             }
         }
@@ -488,6 +526,7 @@ namespace PX.SpecialOrderCostAccounting.Ext
             POOrder poOrder = Base.Document.Current;
             SOOrderEntry soGraph = PXGraph.CreateInstance<SOOrderEntry>();
             ServiceOrderEntry srvGraph = PXGraph.CreateInstance<ServiceOrderEntry>();
+            AppointmentEntry graphAppt = PXGraph.CreateInstance<AppointmentEntry>();
 
             foreach (LinkedOrder linkedSO in soOrders)
             {
@@ -658,17 +697,47 @@ namespace PX.SpecialOrderCostAccounting.Ext
                                     if (srvGraph.ServiceOrderDetails.Current.EstimatedQty != poline.OrderQty ||
                                         srvGraph.ServiceOrderDetails.Current.CuryUnitCost != poline.CuryUnitCost)
                                     {
-                                        srvGraph.ServiceOrderDetails.Current.CuryUnitCost = poline.CuryUnitCost;
-                                        srvGraph.ServiceOrderDetails.Current = srvGraph.ServiceOrderDetails.Update(srvGraph.ServiceOrderDetails.Current);
-                                        var fsSplits = srvGraph.Splits.Select().RowCast<FSSODetSplit>().
-                                                                   Where(x => x.LineNbr == fsoLineforUpdate.LineNbr && x.POLineNbr == poline.LineNbr &&
-                                                                              x.SrvOrdType == fsoLineforUpdate.SrvOrdType &&
-                                                                              x.RefNbr == fsoLineforUpdate.RefNbr);
-                                        foreach (FSSODetSplit fssplit in fsSplits)
+                                        if (srvGraph.ServiceOrderDetails.Current.POSource == ListField_FSPOSource.PurchaseToServiceOrder)
                                         {
-                                            srvGraph.Splits.Current = fssplit;
-                                            srvGraph.Splits.Current.Qty = poline.OrderQty;
-                                            srvGraph.Splits.Current = srvGraph.Splits.Update(srvGraph.Splits.Current);
+                                            srvGraph.ServiceOrderDetails.Current.CuryUnitCost = poline.CuryUnitCost;
+                                            srvGraph.ServiceOrderDetails.Current = srvGraph.ServiceOrderDetails.Update(srvGraph.ServiceOrderDetails.Current);
+                                            var fsSplits = srvGraph.Splits.Select().RowCast<FSSODetSplit>().
+                                                                       Where(x => x.LineNbr == fsoLineforUpdate.LineNbr && x.POLineNbr == poline.LineNbr &&
+                                                                                  x.SrvOrdType == fsoLineforUpdate.SrvOrdType &&
+                                                                                  x.RefNbr == fsoLineforUpdate.RefNbr);
+                                            foreach (FSSODetSplit fssplit in fsSplits)
+                                            {
+                                                srvGraph.Splits.Current = fssplit;
+                                                srvGraph.Splits.Current.Qty = poline.OrderQty;
+                                                srvGraph.Splits.Current = srvGraph.Splits.Update(srvGraph.Splits.Current);
+                                            }
+                                        }
+                                        else if (srvGraph.ServiceOrderDetails.Current.POSource == ListField_FSPOSource.PurchaseToAppointment)
+                                        {
+                                            FSAppointmentDet apptLine = (FSAppointmentDet)FixedDemandViaServiceOrderApptForCostUpdate.Select(poline.OrderType, poline.OrderNbr, poline.LineNbr);
+                                            if (apptLine?.AppointmentID != null)
+                                            {
+                                                graphAppt.Clear();
+
+                                                graphAppt.AppointmentRecords.Current = graphAppt.AppointmentRecords.Search<FSAppointment.appointmentID>(apptLine.AppointmentID, apptLine.SrvOrdType);
+                                                if (graphAppt.AppointmentRecords.Current != null)
+                                                {
+                                                    graphAppt.AppointmentDetails.Current = graphAppt.AppointmentDetails.Select().RowCast<FSAppointmentDet>().Where(x => x.LineNbr == apptLine.LineNbr).FirstOrDefault();
+                                                    if (graphAppt.AppointmentDetails.Current != null)
+                                                    {
+                                                        if (graphAppt.AppointmentDetails.Current.EstimatedQty != poline.OrderQty ||
+                                                            graphAppt.AppointmentDetails.Current.CuryUnitCost != poline.CuryUnitCost)
+                                                        {
+                                                            graphAppt.AppointmentDetails.Current.CanChangeMarkForPO = true;
+                                                            graphAppt.AppointmentDetails.Current.EstimatedQty = poline.OrderQty;
+                                                            graphAppt.AppointmentDetails.Current.ActualQty = poline.OrderQty;
+                                                            graphAppt.AppointmentDetails.Current.CuryUnitCost = poline.CuryUnitCost;
+                                                            graphAppt.AppointmentDetails.Update(graphAppt.AppointmentDetails.Current);
+                                                            graphAppt.Persist();
+                                                        }
+                                                    }
+                                                }
+                                            }
                                         }
                                     }
                                 }
