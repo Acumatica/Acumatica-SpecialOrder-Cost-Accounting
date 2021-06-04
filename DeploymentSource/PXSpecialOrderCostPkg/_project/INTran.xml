@@ -1,3 +1,0 @@
-﻿<Table TableName="INTran">
-    <Column TableName="INTran" ColumnName="UsrSpecialOrderCost" ColumnType="bool" AllowNull="True" MaxLength="25" DecimalPrecision="2" IsNewColumn="True" IsUnicode="True" />
-</Table>

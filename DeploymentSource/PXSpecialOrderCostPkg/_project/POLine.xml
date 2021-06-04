@@ -1,3 +1,0 @@
-﻿<Table TableName="POLine">
-    <Column TableName="POLine" ColumnName="UsrIsFreight" ColumnType="bool" AllowNull="True" MaxLength="25" DecimalPrecision="2" IsNewColumn="True" IsUnicode="True" />
-</Table>
