@@ -16,8 +16,8 @@ Functionality included in this extension:
 * Reference link to open Sales/Service order is added for linked purchase order.
 
 ### Prerequisites
-* Acumatica 2020 R1 (20.103.0019 or higher)
-* Acumatica 2020 R2 (20.202.0043 or higher)
+* [Acumatica 2020 R1 (20.103.0019 or higher)](https://github.com/Acumatica/Acumatica-SpecialOrder-Cost-Accounting/tree/2020R1)
+* [Acumatica 2020 R2 (20.213.0026 or higher)](https://github.com/Acumatica/Acumatica-SpecialOrder-Cost-Accounting/tree/2020R2)
 
 Quick Start
 -----------
