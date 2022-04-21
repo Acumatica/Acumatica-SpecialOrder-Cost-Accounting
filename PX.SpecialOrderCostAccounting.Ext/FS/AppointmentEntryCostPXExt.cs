@@ -40,9 +40,9 @@ namespace PX.SpecialOrderCostAccounting.Ext
 
             FSAppointmentDetCostPXExt fsolineExt = PXCache<FSAppointmentDet>.GetExtension<FSAppointmentDetCostPXExt>(fsoline);
 
-            if (fsolineExt.UsrIsSpecialOrderItem.GetValueOrDefault(false) && (fsoline.POSource == ListField_FSPOSource.PurchaseToAppointment))
+            if (fsolineExt.UsrIsSpecialOrderItem.GetValueOrDefault(false))
             {
-                // Disable editing if PO is created and is Purchase to Order
+                // Disable editing if PO is created
                 PXUIFieldAttribute.SetEnabled<FSAppointmentDet.curyUnitCost>(Base.AppointmentDetails.Cache, fsoline, (String.IsNullOrEmpty(fsoline.PONbr)));
                 PXUIFieldAttribute.SetEnabled<FSAppointmentDet.estimatedQty>(Base.AppointmentDetails.Cache, fsoline, (String.IsNullOrEmpty(fsoline.PONbr)));
                 PXUIFieldAttribute.SetEnabled<FSAppointmentDet.actualQty>(Base.AppointmentDetails.Cache, fsoline, (String.IsNullOrEmpty(fsoline.PONbr)));
