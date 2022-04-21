@@ -18,6 +18,7 @@ Functionality included in this extension:
 ### Prerequisites
 * [Acumatica 2020 R1 (20.103.0019 or higher)](https://github.com/Acumatica/Acumatica-SpecialOrder-Cost-Accounting/tree/2020R1)
 * [Acumatica 2020 R2 (20.213.0026 or higher)](https://github.com/Acumatica/Acumatica-SpecialOrder-Cost-Accounting/tree/2020R2)
+* [Acumatica 2021 R2 (21.207.0045 or higher)](https://github.com/Acumatica/Acumatica-SpecialOrder-Cost-Accounting/tree/2021R2)
 
 Quick Start
 -----------
