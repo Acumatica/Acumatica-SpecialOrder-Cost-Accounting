@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using PX.Data;
 using PX.Objects.FS;
 using PX.Objects.IN;
@@ -62,6 +63,44 @@ namespace PX.SpecialOrderCostAccounting.Ext
                 }
             }
             BaseInvoke(cache, apptLine, newValue, QtyField, runningFieldVerifying);
+        }
+
+        public delegate void BaseInsertUpdateSODet(PXCache cacheAppointmentDet, FSAppointmentDet fsAppointmentDetRow, PXSelectBase<FSSODet> viewSODet, FSAppointment apptRow);
+
+        [PXOverride]
+        public virtual void InsertUpdateSODet(PXCache cacheAppointmentDet, FSAppointmentDet fsAppointmentDetRow, PXSelectBase<FSSODet> viewSODet, FSAppointment apptRow, BaseInsertUpdateSODet BaseInvoke)
+        {
+            PXEntryStatus lineStatus = cacheAppointmentDet.GetStatus(fsAppointmentDetRow);
+            if ((lineStatus == PXEntryStatus.Inserted || lineStatus == PXEntryStatus.Updated) && 
+                fsAppointmentDetRow?.SODetID != null && (fsAppointmentDetRow.POSource == ListField_FSPOSource.PurchaseToAppointment))
+            {
+                FSSODet fsSODetRow = FSSODet.UK.Find(viewSODet.Cache.Graph, fsAppointmentDetRow.SODetID);
+
+                if (fsAppointmentDetRow.EstimatedQty != fsSODetRow?.EstimatedQty)
+                {
+                    FSAppointmentDetCostPXExt fsolineExt = PXCache<FSAppointmentDet>.GetExtension<FSAppointmentDetCostPXExt>(fsAppointmentDetRow);
+                    if (fsolineExt.UsrIsSpecialOrderItem.GetValueOrDefault(false))
+                    {
+                        ServiceOrderEntry srvGraph = (ServiceOrderEntry)viewSODet.Cache.Graph;
+
+                        if (srvGraph != null)
+                        {
+                            srvGraph.ServiceOrderDetails.Current = fsSODetRow;
+                            var fsSplits = srvGraph.Splits.Select().RowCast<FSSODetSplit>().Where(x => x.LineNbr == fsSODetRow.LineNbr &&
+                                                                                                       x.SrvOrdType == fsSODetRow.SrvOrdType &&
+                                                                                                       x.RefNbr == fsSODetRow.RefNbr);
+                            foreach (FSSODetSplit fssplit in fsSplits)
+                            {
+                                srvGraph.Splits.Current = fssplit;
+                                srvGraph.Splits.Current.Qty = fsAppointmentDetRow.EstimatedQty;
+                                srvGraph.Splits.Current = srvGraph.Splits.Update(srvGraph.Splits.Current);
+                            }
+                        }
+                    }
+                }
+            }
+
+            BaseInvoke(cacheAppointmentDet, fsAppointmentDetRow, viewSODet, apptRow);
         }
     }
 }

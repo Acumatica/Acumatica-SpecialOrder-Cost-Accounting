@@ -1,13 +1,13 @@
 ﻿using System;
 using PX.Data;
 using PX.Objects.CR;
+using PX.Objects.CR.Extensions.CRCreateSalesOrder;
 using PX.Objects.IN;
 using PX.Objects.SO;
-using static PX.Objects.CR.OpportunityMaint;
 
 namespace PX.SpecialOrderCostAccounting.Ext
 {
-    public class OpportunityMaintCostPXExt : PXGraphExtension<OpportunityMaint>
+    public class OpportunityMaintCostPXExt : PXGraphExtension<OpportunityMaint.CRCreateSalesOrderExt, OpportunityMaint>
     {
         protected virtual void _(Events.FieldUpdated<CROpportunityProducts.inventoryID> e, PXFieldUpdated BaseInvoke)
         {
@@ -24,10 +24,10 @@ namespace PX.SpecialOrderCostAccounting.Ext
             }
         }
 
-        public delegate void BaseDoCreateSalesOrder(CreateSalesOrderFilter param);
+        public delegate void BaseDoCreateSalesOrder();
 
         [PXOverride]
-        public virtual void DoCreateSalesOrder(CreateSalesOrderFilter param, BaseDoCreateSalesOrder BaseInvoke)
+        public virtual void DoCreateSalesOrder(BaseDoCreateSalesOrder BaseInvoke)
         {
             PXGraph.InstanceCreated.AddHandler<SOOrderEntry>((graph) =>
             {
@@ -47,7 +47,7 @@ namespace PX.SpecialOrderCostAccounting.Ext
                 });
             });
 
-            BaseInvoke(param);
+            BaseInvoke();
         }
     }
 }

@@ -34,40 +34,48 @@ namespace PX.SpecialOrderCostAccounting.Ext
                                                         Select(Base, data.ARDocType, data.ARRefNbr, data.ARLineNbr);
                     if (arData != null)
                     {
-                        FSxARTran arDataExt = PXCache<ARTran>.GetExtension<FSxARTran>(arData);
+                        FSARTran arDataExt = FSARTran.PK.Find(Base, arData.TranType, arData.RefNbr, arData.LineNbr);
 
-                        PXResult<POLine, FSSODet> datainfo = (PXResult<POLine, FSSODet>)
-                                                                 PXSelectJoin<POLine, InnerJoin<FSSODet, On<FSSODet.poLineNbr, Equal<POLine.lineNbr>,
-                                                                                        And<FSSODet.poType, Equal<POLine.orderType>,
-                                                                                        And<FSSODet.poNbr, Equal<POLine.orderNbr>>>>>,
-                                                                                      Where<FSSODet.sODetID, Equal<Required<FSSODet.sODetID>>,
-                                                                                        And<FSSODet.sOID, Equal<Required<FSSODet.sOID>>>>>.
-                                                                                        Select(Base, arDataExt.SODetID, arDataExt.SOID);
-                        if (datainfo == null) { return; }
-
-                        POLine poData = datainfo;
-                        FSSODet fssoData = datainfo;
-
-                        INTranCostPXExt dataExt = PXCache<INTran>.GetExtension<INTranCostPXExt>(data);
-                        dataExt.UsrSpecialOrderCost = true;
-                        data.UnitCost = poData.UnitCost;
-
-                        // PO Source is Service Order 
-                        if (fssoData.POSource == ListField_FSPOSource.PurchaseToServiceOrder)
+                        if (arDataExt != null)
                         {
-                            //Copy Line service order line notes to issue document line
-                            PXNoteAttribute.CopyNoteAndFiles(docgraph.Caches[typeof(FSSODet)], fssoData, sender, data, true, false);
-                        }
-                        else if (fssoData.POSource == ListField_FSPOSource.PurchaseToAppointment)
-                        {
-                            FSAppointmentDet fssoAptData = PXSelect<FSAppointmentDet,
-                                                                Where<FSAppointmentDet.appDetID, Equal<Required<FSAppointmentDet.appDetID>>,
-                                                                    And<FSAppointmentDet.appointmentID, Equal<Required<FSAppointmentDet.appointmentID>>>>>.
-                                                                    SelectWindowed(Base, 0, 1, arDataExt.AppDetID, arDataExt.AppointmentID);
-                            if (fssoAptData != null)
+                            PXResult<POLine, FSSODet> datainfo = (PXResult<POLine, FSSODet>)
+                                                                     PXSelectJoin<POLine, InnerJoin<FSSODet, On<FSSODet.poLineNbr, Equal<POLine.lineNbr>,
+                                                                                            And<FSSODet.poType, Equal<POLine.orderType>,
+                                                                                            And<FSSODet.poNbr, Equal<POLine.orderNbr>>>>>,
+                                                                                          Where<FSSODet.lineNbr, Equal<Required<FSSODet.lineNbr>>,
+                                                                                            And<FSSODet.srvOrdType, Equal<Required<FSSODet.srvOrdType>>,
+                                                                                            And<FSSODet.refNbr, Equal<Required<FSSODet.refNbr>>>>>>.
+                                                                                            Select(Base, arDataExt.ServiceOrderLineNbr, arDataExt.SrvOrdType,
+                                                                                            arDataExt.ServiceOrderRefNbr);
+                            if (datainfo == null) { return; }
+
+                            POLine poData = datainfo;
+                            FSSODet fssoData = datainfo;
+
+                            INTranCostPXExt dataExt = PXCache<INTran>.GetExtension<INTranCostPXExt>(data);
+                            dataExt.UsrSpecialOrderCost = true;
+                            data.UnitCost = poData.UnitCost;
+
+                            FSServiceOrder srvOrder = FSSODet.FK.ServiceOrder.FindParent(Base, fssoData);
+
+                            // Billing is via Service Order 
+                            if (srvOrder.BillingBy == ID.Billing_By.SERVICE_ORDER)
                             {
-                                //Copy Appointment line notes to issue document line
-                                PXNoteAttribute.CopyNoteAndFiles(docgraph.Caches[typeof(FSAppointmentDet)], fssoAptData, sender, data, true, false);
+                                //Copy Line service order line notes to issue document line
+                                PXNoteAttribute.CopyNoteAndFiles(docgraph.Caches[typeof(FSSODet)], fssoData, sender, data, true, false);
+                            }
+                            // Billing is via Appointment
+                            else if (srvOrder.BillingBy == ID.Billing_By.APPOINTMENT)
+                            {
+                                FSAppointmentDet fssoAptData = PXSelect<FSAppointmentDet,
+                                                                    Where<FSAppointmentDet.refNbr, Equal<Required<FSAppointmentDet.refNbr>>,
+                                                                        And<FSAppointmentDet.lineNbr, Equal<Required<FSAppointmentDet.lineNbr>>>>>.
+                                                                        SelectWindowed(Base, 0, 1, arDataExt.AppointmentRefNbr, arDataExt.AppointmentLineNbr);
+                                if (fssoAptData != null)
+                                {
+                                    //Copy Appointment line notes to issue document line
+                                    PXNoteAttribute.CopyNoteAndFiles(docgraph.Caches[typeof(FSAppointmentDet)], fssoAptData, sender, data, true, false);
+                                }
                             }
                         }
                     }

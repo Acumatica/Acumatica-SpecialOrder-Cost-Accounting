@@ -43,7 +43,7 @@ namespace PX.SpecialOrderCostAccounting.Ext
         public virtual void ReleaseReturn(INIssueEntry docgraph, PX.Objects.AP.APInvoiceEntry invoiceGraph, POReceipt aDoc, DocumentList<INRegister> aCreated, DocumentList<PX.Objects.AP.APInvoice> aInvoiceCreated, bool aIsMassProcess,
                                           BaseReleaseReturn BaseInvoke)
         {
-            if (aDoc.ReturnOrigCost != true)
+            if (aDoc.ReturnInventoryCostMode != ReturnCostMode.OriginalCost)
             {
                 bool? bSpecialOrder = PXSelectReadonly<POReceiptLine,
                                         Where<POReceiptLine.receiptType, Equal<Required<POReceiptLine.receiptType>>,

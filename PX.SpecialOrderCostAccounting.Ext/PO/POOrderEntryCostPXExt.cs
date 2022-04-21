@@ -9,6 +9,7 @@ using System.Linq;
 using static PX.Objects.PO.POOrderEntry;
 using System.Collections.Generic;
 using PX.Common;
+using PX.Objects.PO.GraphExtensions.POOrderEntryExt;
 
 namespace PX.SpecialOrderCostAccounting.Ext
 {
@@ -282,7 +283,8 @@ namespace PX.SpecialOrderCostAccounting.Ext
 
             POLineCostPXExt polineExt = PXCache<POLine>.GetExtension<POLineCostPXExt>(poline);
             ViewServiceOrderDemand.SetVisible(polineExt.UsrIsServiceOrderLine.GetValueOrDefault(false));
-            Base.viewDemand.SetVisible(polineExt.UsrIsNonServiceOrderLine.GetValueOrDefault(false));
+            PurchaseToSOLinksExt posoLinkGraph = Base.GetExtension<PurchaseToSOLinksExt>();
+            posoLinkGraph?.viewDemand?.SetVisible(polineExt.UsrIsNonServiceOrderLine.GetValueOrDefault(false));
 
             bool bAllowEdit = !(polineExt.UsrSOLinkRef == Messages.ViewMultiple);
             PXUIFieldAttribute.SetEnabled<POLine.orderQty>(e.Cache, poline, !(!bAllowEdit || polineExt.UsrIsFreight.GetValueOrDefault(false)));
@@ -711,6 +713,7 @@ namespace PX.SpecialOrderCostAccounting.Ext
                                                 srvGraph.Splits.Current.Qty = poline.OrderQty;
                                                 srvGraph.Splits.Current = srvGraph.Splits.Update(srvGraph.Splits.Current);
                                             }
+                                            srvGraph.ServiceOrderDetails.Cache.RaiseFieldUpdated<FSSODet.estimatedQty>(srvGraph.ServiceOrderDetails.Current, null);
                                         }
                                         else if (srvGraph.ServiceOrderDetails.Current.POSource == ListField_FSPOSource.PurchaseToAppointment)
                                         {
@@ -730,7 +733,6 @@ namespace PX.SpecialOrderCostAccounting.Ext
                                                         {
                                                             graphAppt.AppointmentDetails.Current.CanChangeMarkForPO = true;
                                                             graphAppt.AppointmentDetails.Current.EstimatedQty = poline.OrderQty;
-                                                            graphAppt.AppointmentDetails.Current.ActualQty = poline.OrderQty;
                                                             graphAppt.AppointmentDetails.Current.CuryUnitCost = poline.CuryUnitCost;
                                                             graphAppt.AppointmentDetails.Update(graphAppt.AppointmentDetails.Current);
                                                             graphAppt.Persist();
