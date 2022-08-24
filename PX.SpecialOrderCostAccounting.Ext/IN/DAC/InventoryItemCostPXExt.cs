@@ -1,10 +1,13 @@
 using PX.Data;
+using PX.Objects.CS;
 using PX.Objects.IN;
 
 namespace PX.SpecialOrderCostAccounting.Ext
 {
     public sealed class InventoryItemCostPXExt : PXCacheExtension<InventoryItem>
     {
+        public static bool IsActive() => PXAccess.FeatureInstalled<FeaturesSet.inventory>();
+
         #region UsrIsSpecialOrderItem
 
         public abstract class usrIsSpecialOrderItem : PX.Data.BQL.BqlBool.Field<usrIsSpecialOrderItem> { }

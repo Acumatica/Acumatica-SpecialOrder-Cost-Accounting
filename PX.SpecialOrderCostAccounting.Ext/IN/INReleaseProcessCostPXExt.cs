@@ -7,6 +7,8 @@ namespace PX.SpecialOrderCostAccounting.Ext
 {
     public class INReleaseProcessPXExt : PXGraphExtension<INReleaseProcess>
     {
+        public static bool IsActive() => true;
+
         public delegate void BaseIssueCost(INCostStatus layer, INTran tran, INTranSplit split, InventoryItem item, ref decimal QtyUnCosted);
 
         [PXOverride]
@@ -17,7 +19,7 @@ namespace PX.SpecialOrderCostAccounting.Ext
             //And Vendor Cost is used (UsrSpecialOrderCost)
             //Transaction is for Issue of invoice
             InventoryItemCostPXExt itemExt = PXCache<InventoryItem>.GetExtension<InventoryItemCostPXExt>(item);
-            if (item.ValMethod == INValMethod.Average && itemExt.UsrIsSpecialOrderItem.GetValueOrDefault(false) &&
+            if (item.ValMethod == INValMethod.Average && itemExt?.UsrIsSpecialOrderItem == true &&
                 tran.DocType == INDocType.Issue && (tran.ARDocType == ARDocType.Invoice || tran.SOLineType == SOLineType.Inventory))
             {
                 INTranCostPXExt tranExt = PXCache<INTran>.GetExtension<INTranCostPXExt>(tran);

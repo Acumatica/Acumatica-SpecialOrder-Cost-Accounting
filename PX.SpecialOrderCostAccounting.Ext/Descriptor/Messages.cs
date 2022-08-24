@@ -31,7 +31,10 @@ namespace PX.SpecialOrderCostAccounting.Ext
         public const string POOrderLinkedToServiceOrder = "Deletion of the purchase order will unlink service order from this purchase order. Do you want to continue?";
         public const string POOrderLinkedToSalesOrder = "Deletion of the purchase order will unlink sales order from this purchase order. Do you want to continue?";
 
-        public const string POReceiptQtyUpdateNotAllowed = "Line is linked with Sales/Service Order. Updating Receipt Qty is not allowed.";
+        public const string POReceiptQtyUpdateNotAllowed = "Line is linked with Sales/Service Order. Receipt quantity can not be more than ordered quantity for Special Order Item.";
+
+        public const string POOrderQtyUpdateNotAllowedForRecvd = "Some quantities are received. Updating Order Quantity is not allowed.";
+        public const string POOrderCostUpdateNotAllowedForRecvd = "Some quantities are received. Updating Cost is not allowed.";
         public const string POOrderQtyUpdateNotAllowed = "Appointment is scheduled. Updating Order Qty is not allowed.";
         public const string POOrderCostUpdateNotAllowed = "Appointment is scheduled. Updating Cost is not allowed.";
 

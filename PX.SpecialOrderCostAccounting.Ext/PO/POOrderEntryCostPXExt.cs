@@ -10,11 +10,14 @@ using static PX.Objects.PO.POOrderEntry;
 using System.Collections.Generic;
 using PX.Common;
 using PX.Objects.PO.GraphExtensions.POOrderEntryExt;
+using PX.Objects.CS;
 
 namespace PX.SpecialOrderCostAccounting.Ext
 {
     public class POOrderEntryCostPXExt : PXGraphExtension<POOrderEntry>
     {
+        public static bool IsActive() => PXAccess.FeatureInstalled<FeaturesSet.distributionModule>();
+
         [PXCopyPasteHiddenView]
         public PXSelect<FSSODet,
             Where<FSSODet.poType, Equal<Optional<POLine.orderType>>,
@@ -112,7 +115,15 @@ namespace PX.SpecialOrderCostAccounting.Ext
             if (poline.CuryUnitCost == (decimal?)e.NewValue) { return; }
 
             POLineCostPXExt poLineExt = PXCache<POLine>.GetExtension<POLineCostPXExt>(poline);
-            //if (!poLineExt.UsrIsSpecialOrderItem.GetValueOrDefault(false)) { return; }
+
+            if (poLineExt.UsrIsSpecialOrderItem.GetValueOrDefault(false))
+            {
+                if (poline.ReceivedQty.GetValueOrDefault(0) > 0m)
+                {
+                    e.Cancel = true;
+                    throw new PXSetPropertyException<POLine.curyUnitCost>(Messages.POOrderCostUpdateNotAllowedForRecvd, PXErrorLevel.Error);
+                }
+            }
 
             if (poline.LineType == POLineType.GoodsForSalesOrder || poline.LineType == POLineType.GoodsForDropShip ||
                 poline.LineType == POLineType.NonStockForDropShip || poline.LineType == POLineType.NonStockForSalesOrder)
@@ -169,7 +180,15 @@ namespace PX.SpecialOrderCostAccounting.Ext
             if (poline.OrderQty == (decimal?)e.NewValue) { return; }
 
             POLineCostPXExt poLineExt = PXCache<POLine>.GetExtension<POLineCostPXExt>(poline);
-            //if (!poLineExt.UsrIsSpecialOrderItem.GetValueOrDefault(false)) { return; }
+            
+            if (poLineExt.UsrIsSpecialOrderItem.GetValueOrDefault(false))
+            {
+                if (poline.ReceivedQty.GetValueOrDefault(0) > 0m)
+                {
+                    e.Cancel = true;
+                    throw new PXSetPropertyException<POLine.orderQty>(Messages.POOrderQtyUpdateNotAllowedForRecvd, PXErrorLevel.Error);
+                }
+            }
 
             if (poline.LineType == POLineType.GoodsForSalesOrder || poline.LineType == POLineType.GoodsForDropShip ||
                 poline.LineType == POLineType.NonStockForDropShip || poline.LineType == POLineType.NonStockForSalesOrder)
@@ -526,9 +545,12 @@ namespace PX.SpecialOrderCostAccounting.Ext
         protected virtual void UpdateLinkedSOAndServiceOrder(List<POLine> items, List<LinkedOrder> soOrders)
         {
             POOrder poOrder = Base.Document.Current;
-            SOOrderEntry soGraph = PXGraph.CreateInstance<SOOrderEntry>();
-            ServiceOrderEntry srvGraph = PXGraph.CreateInstance<ServiceOrderEntry>();
-            AppointmentEntry graphAppt = PXGraph.CreateInstance<AppointmentEntry>();
+            SOOrderEntry soGraph = (PXAccess.FeatureInstalled<FeaturesSet.distributionModule>()) ? 
+                                    PXGraph.CreateInstance<SOOrderEntry>() : null;
+            ServiceOrderEntry srvGraph = (PXAccess.FeatureInstalled<FeaturesSet.serviceManagementModule>()) ?
+                                    PXGraph.CreateInstance<ServiceOrderEntry>() : null;
+            AppointmentEntry graphAppt = (PXAccess.FeatureInstalled<FeaturesSet.serviceManagementModule>()) ?
+                                    PXGraph.CreateInstance<AppointmentEntry>() : null;
 
             foreach (LinkedOrder linkedSO in soOrders)
             {
@@ -553,10 +575,11 @@ namespace PX.SpecialOrderCostAccounting.Ext
                     //var polines = items.Where(x => !String.IsNullOrEmpty(x.GetExtension<POLineCostPXExt>().UsrSOLinkRef)  &&
                     //                               !x.GetExtension<POLineCostPXExt>().UsrIsSpecialOrderItem.GetValueOrDefault(false));
                     var polines = items.Where(x => !String.IsNullOrEmpty(x.GetExtension<POLineCostPXExt>().UsrSOLinkRef));
-                    if (linkedSO.RefType == POLineType.GoodsForSalesOrder ||
-                        linkedSO.RefType == POLineType.GoodsForDropShip ||
-                        linkedSO.RefType == POLineType.NonStockForSalesOrder ||
-                        linkedSO.RefType == POLineType.NonStockForDropShip)
+                    if ((soGraph != null) && 
+                        (linkedSO.RefType == POLineType.GoodsForSalesOrder ||
+                         linkedSO.RefType == POLineType.GoodsForDropShip ||
+                         linkedSO.RefType == POLineType.NonStockForSalesOrder ||
+                         linkedSO.RefType == POLineType.NonStockForDropShip))
                     {
                         bool bChanged = false;
                         soGraph.Clear();
@@ -626,8 +649,9 @@ namespace PX.SpecialOrderCostAccounting.Ext
                             }
                         }
                     }
-                    else if (linkedSO.RefType == POLineType.GoodsForServiceOrder ||
-                             linkedSO.RefType == POLineType.NonStockForServiceOrder)
+                    else if ((srvGraph != null) && 
+                             (linkedSO.RefType == POLineType.GoodsForServiceOrder ||
+                              linkedSO.RefType == POLineType.NonStockForServiceOrder))
                     {
                         srvGraph.Clear();
                         srvGraph.ServiceOrderRecords.Current = srvGraph.ServiceOrderRecords.Search<FSServiceOrder.refNbr>(soNbr, soType);
@@ -718,7 +742,7 @@ namespace PX.SpecialOrderCostAccounting.Ext
                                         else if (srvGraph.ServiceOrderDetails.Current.POSource == ListField_FSPOSource.PurchaseToAppointment)
                                         {
                                             FSAppointmentDet apptLine = (FSAppointmentDet)FixedDemandViaServiceOrderApptForCostUpdate.Select(poline.OrderType, poline.OrderNbr, poline.LineNbr);
-                                            if (apptLine?.AppointmentID != null)
+                                            if (apptLine?.AppointmentID != null && graphAppt != null)
                                             {
                                                 graphAppt.Clear();
 

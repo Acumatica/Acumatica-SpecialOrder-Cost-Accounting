@@ -1,13 +1,15 @@
-﻿using PX.Data;
+﻿using System;
+using PX.Data;
+using PX.Objects.CS;
 using PX.Objects.FS;
 using PX.Objects.IN;
-using PX.Objects.SO;
-using System;
 
 namespace PX.SpecialOrderCostAccounting.Ext
 {
     public class ServiceOrderEntryCostPXExt : PXGraphExtension<ServiceOrderEntry>
     {
+        public static bool IsActive() => PXAccess.FeatureInstalled<FeaturesSet.serviceManagementModule>();
+
         [PXMergeAttributes(Method = MergeMethod.Merge)]
         [PXDefault(typeof(Switch<Case<Where<Selector<FSSODet.inventoryID, InventoryItemCostPXExt.usrIsSpecialOrderItem>, IsNotNull>,
                                             Selector<FSSODet.inventoryID, InventoryItemCostPXExt.usrIsSpecialOrderItem>>, False>))]

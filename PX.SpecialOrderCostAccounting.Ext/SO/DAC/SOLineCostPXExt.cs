@@ -1,10 +1,13 @@
 ﻿using PX.Data;
+using PX.Objects.CS;
 using PX.Objects.SO;
 
 namespace PX.SpecialOrderCostAccounting.Ext
 {
     public sealed class SOLineCostPXExt : PXCacheExtension<SOLine>
     {
+        public static bool IsActive() => PXAccess.FeatureInstalled<FeaturesSet.distributionModule>();
+
         #region UsrIsSpecialOrderItem
 
         public abstract class usrIsSpecialOrderItem : PX.Data.BQL.BqlBool.Field<usrIsSpecialOrderItem> { }

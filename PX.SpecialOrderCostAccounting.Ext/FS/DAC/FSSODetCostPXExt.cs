@@ -1,10 +1,13 @@
 ﻿using PX.Data;
+using PX.Objects.CS;
 using PX.Objects.FS;
 
 namespace PX.SpecialOrderCostAccounting.Ext
 {
     public sealed class FSSODetCostPXExt : PXCacheExtension<FSSODet>
     {
+        public static bool IsActive() => PXAccess.FeatureInstalled<FeaturesSet.serviceManagementModule>();
+
         #region UsrIsSpecialOrderItem
 
         public abstract class usrIsSpecialOrderItem : PX.Data.BQL.BqlBool.Field<usrIsSpecialOrderItem> { }

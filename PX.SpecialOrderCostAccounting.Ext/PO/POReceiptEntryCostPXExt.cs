@@ -10,12 +10,18 @@ namespace PX.SpecialOrderCostAccounting.Ext
 {
     public class POReceiptEntryCostPXExt : PXGraphExtension<POReceiptEntry>
     {
+        public static bool IsActive() => PXAccess.FeatureInstalled<FeaturesSet.distributionModule>();
+
         protected virtual void _(Events.FieldVerifying<POReceiptLine, POReceiptLine.receiptQty> e, PXFieldVerifying BaseInvoke)
         {
             if (BaseInvoke != null) { BaseInvoke(e.Cache, e.Args); }
 
             POReceiptLine data = e.Row;
             if (data == null) { return; }
+
+            POReceiptLineCostPXExt dataExt = PXCache<POReceiptLine>.GetExtension<POReceiptLineCostPXExt>(data);
+
+            if (dataExt?.UsrIsSpecialOrderItem != true) { return; }
 
             decimal? dRctQty = (decimal?)e.NewValue;
             decimal? dRctOldQty = (decimal?)e.OldValue;
@@ -28,12 +34,29 @@ namespace PX.SpecialOrderCostAccounting.Ext
                                         And<POLine.lineNbr, Equal<Required<POLine.lineNbr>>>>>>.
                                         Select(Base, data.POType, data.PONbr, data.POLineNbr);
 
+                // Restrict receiving more than ordered
                 if ((poLinedata?.LineType == POLineType.GoodsForDropShip ||
                          poLinedata?.LineType == POLineType.GoodsForSalesOrder ||
-                         poLinedata?.LineType == POLineType.GoodsForServiceOrder) && (poLinedata?.OrderQty != dRctQty))
+                         poLinedata?.LineType == POLineType.GoodsForServiceOrder) && 
+                         (dRctQty.GetValueOrDefault(0) + poLinedata.ReceivedQty.GetValueOrDefault(0) > poLinedata.OrderQty.GetValueOrDefault(0)))
                 {
                     throw new PXSetPropertyException<POReceiptLine.receiptQty>(Messages.POReceiptQtyUpdateNotAllowed, PXErrorLevel.Error);
                 }
+            }
+        }
+
+        protected virtual void _(Events.RowSelected<POReceiptLine> e, PXRowSelected BaseInvoke)
+        {
+            if (BaseInvoke != null) { BaseInvoke(e.Cache, e.Args); }
+
+            POReceiptLine prline = e.Row;
+            if (prline == null) { return; }
+
+            POReceiptLineCostPXExt polineExt = PXCache<POReceiptLine>.GetExtension<POReceiptLineCostPXExt>(prline);
+
+            if (polineExt.UsrIsSpecialOrderItem == true)
+            {
+                PXUIFieldAttribute.SetEnabled<POReceiptLine.curyUnitCost>(e.Cache, prline, false);
             }
         }
 

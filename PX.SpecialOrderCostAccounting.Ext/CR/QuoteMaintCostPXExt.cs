@@ -7,6 +7,8 @@ namespace PX.SpecialOrderCostAccounting.Ext
 {
     public class QuoteMaintCostPXExt : PXGraphExtension<QuoteMaint>
     {
+        public static bool IsActive() => true;
+
         protected virtual void _(Events.FieldUpdated<CROpportunityProducts.inventoryID> e, PXFieldUpdated BaseInvoke)
         {
             if (BaseInvoke != null) { BaseInvoke(e.Cache, e.Args); }
@@ -16,7 +18,7 @@ namespace PX.SpecialOrderCostAccounting.Ext
             if (item == null) { return; }
             InventoryItemCostPXExt itemExt = PXCache<InventoryItem>.GetExtension<InventoryItemCostPXExt>(item);
 
-            if (itemExt.UsrIsSpecialOrderItem.GetValueOrDefault(false))
+            if (itemExt?.UsrIsSpecialOrderItem == true)
             {
                 e.Cache.SetValueExt<CROpportunityProducts.pOCreate>(e.Row, itemExt.UsrIsSpecialOrderItem);
             }

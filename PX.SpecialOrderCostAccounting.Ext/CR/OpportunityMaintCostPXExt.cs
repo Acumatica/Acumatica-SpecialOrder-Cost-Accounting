@@ -9,6 +9,8 @@ namespace PX.SpecialOrderCostAccounting.Ext
 {
     public class OpportunityMaintCostPXExt : PXGraphExtension<OpportunityMaint.CRCreateSalesOrderExt, OpportunityMaint>
     {
+        public static bool IsActive() => OpportunityMaint.CRCreateSalesOrderExt.IsActive();
+
         protected virtual void _(Events.FieldUpdated<CROpportunityProducts.inventoryID> e, PXFieldUpdated BaseInvoke)
         {
             if (BaseInvoke != null) { BaseInvoke(e.Cache, e.Args); }

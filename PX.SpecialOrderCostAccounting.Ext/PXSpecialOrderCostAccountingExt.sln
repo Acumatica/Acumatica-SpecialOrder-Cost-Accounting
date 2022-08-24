@@ -5,26 +5,26 @@ VisualStudioVersion = 16.0.30104.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PX.SpecialOrderCostAccounting.Ext", "PX.SpecialOrderCostAccounting.Ext.csproj", "{39CDDFF0-BC4B-4903-BE93-F196A1AE1BED}"
 EndProject
-Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "AcmASG2021R207", "http://localhost/AcmASG2021R207", "{7603B521-B0C9-4B22-B4EC-166BC9DAD1E2}"
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "AcmASG2021R217", "http://localhost/AcmASG2021R217", "{C3A10F58-072D-4DC8-98C9-7BB599659E3D}"
 	ProjectSection(WebsiteProperties) = preProject
 		UseIISExpress = "false"
 		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.8"
 		ProjectReferences = "{39cddff0-bc4b-4903-be93-f196a1ae1bed}|PX.SpecialOrderCostAccounting.Ext.dll;"
-		Debug.AspNetCompiler.VirtualPath = "/AcmASG2021R207"
-		Debug.AspNetCompiler.PhysicalPath = "..\..\..\..\Program Files (x86)\Acumatica ERP\AcmASG2021R207\"
-		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\AcmASG2021R207\"
+		Debug.AspNetCompiler.VirtualPath = "/AcmASG2021R217"
+		Debug.AspNetCompiler.PhysicalPath = "..\..\..\..\Program Files (x86)\Acumatica ERP\AcmASG2021R217\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\AcmASG2021R217\"
 		Debug.AspNetCompiler.Updateable = "true"
 		Debug.AspNetCompiler.ForceOverwrite = "true"
 		Debug.AspNetCompiler.FixedNames = "false"
 		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.VirtualPath = "/AcmASG2021R207"
-		Release.AspNetCompiler.PhysicalPath = "..\..\..\..\Program Files (x86)\Acumatica ERP\AcmASG2021R207\"
-		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\AcmASG2021R207\"
+		Release.AspNetCompiler.VirtualPath = "/AcmASG2021R217"
+		Release.AspNetCompiler.PhysicalPath = "..\..\..\..\Program Files (x86)\Acumatica ERP\AcmASG2021R217\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\AcmASG2021R217\"
 		Release.AspNetCompiler.Updateable = "true"
 		Release.AspNetCompiler.ForceOverwrite = "true"
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
-		SlnRelativePath = "..\..\..\..\Program Files (x86)\Acumatica ERP\AcmASG2021R207\"
+		SlnRelativePath = "..\..\..\..\Program Files (x86)\Acumatica ERP\AcmASG2021R217\"
 	EndProjectSection
 EndProject
 Global
@@ -37,10 +37,9 @@ Global
 		{39CDDFF0-BC4B-4903-BE93-F196A1AE1BED}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{39CDDFF0-BC4B-4903-BE93-F196A1AE1BED}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{39CDDFF0-BC4B-4903-BE93-F196A1AE1BED}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7603B521-B0C9-4B22-B4EC-166BC9DAD1E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7603B521-B0C9-4B22-B4EC-166BC9DAD1E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7603B521-B0C9-4B22-B4EC-166BC9DAD1E2}.Release|Any CPU.ActiveCfg = Debug|Any CPU
-		{7603B521-B0C9-4B22-B4EC-166BC9DAD1E2}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{C3A10F58-072D-4DC8-98C9-7BB599659E3D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C3A10F58-072D-4DC8-98C9-7BB599659E3D}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{C3A10F58-072D-4DC8-98C9-7BB599659E3D}.Release|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

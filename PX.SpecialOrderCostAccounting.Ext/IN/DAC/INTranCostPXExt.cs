@@ -5,6 +5,8 @@ namespace PX.SpecialOrderCostAccounting.Ext
 {
     public sealed class INTranCostPXExt : PXCacheExtension<INTran>
     {
+        public static bool IsActive() => true;
+
         #region UsrSpecialOrderCost
         public abstract class usrSpecialOrderCost : PX.Data.BQL.BqlBool.Field<usrSpecialOrderCost> { }
 

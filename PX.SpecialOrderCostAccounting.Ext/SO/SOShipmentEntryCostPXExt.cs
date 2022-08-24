@@ -10,6 +10,8 @@ namespace PX.SpecialOrderCostAccounting.Ext
 {
     public class SOShipmentEntryCostPXExt : PXGraphExtension<SOShipmentEntry>
     {
+        public static bool IsActive() => PXAccess.FeatureInstalled<FeaturesSet.distributionModule>();
+
         public delegate void BasePostShipment(INRegisterEntryBase docgraph, PXResult<SOOrderShipment, SOOrder> sh, DocumentList<INRegister> list, ARInvoice invoice);
 
         [PXOverride]

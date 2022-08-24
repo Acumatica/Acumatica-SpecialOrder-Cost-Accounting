@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Linq;
 using PX.Data;
+using PX.Objects.CS;
 using PX.Objects.FS;
 using PX.Objects.IN;
-using PX.Objects.SO;
 
 namespace PX.SpecialOrderCostAccounting.Ext
 {
     public class AppointmentEntryCostPXExt : PXGraphExtension<AppointmentEntry>
     {
+        public static bool IsActive() => PXAccess.FeatureInstalled<FeaturesSet.serviceManagementModule>();
+
         [PXMergeAttributes(Method = MergeMethod.Merge)]
         [PXDefault(typeof(Switch<Case<Where<Selector<FSAppointmentDet.inventoryID, InventoryItemCostPXExt.usrIsSpecialOrderItem>, IsNotNull>,
                                             Selector<FSAppointmentDet.inventoryID, InventoryItemCostPXExt.usrIsSpecialOrderItem>>, False>))]
@@ -18,15 +20,21 @@ namespace PX.SpecialOrderCostAccounting.Ext
         protected virtual void _(Events.FieldDefaulting<FSAppointmentDet, FSAppointmentDet.enablePO> e, PXFieldDefaulting BaseInvoke)
         {
             if (BaseInvoke != null) { BaseInvoke(e.Cache, e.Args); }
+            if (e.Row == null) { return; }
+            
+            FSSODet fsSODetRow = FSSODet.UK.Find(Base, e.Row.SODetID);
 
-            InventoryItem data = (InventoryItem)PXSelectorAttribute.Select<FSAppointmentDet.inventoryID>(e.Cache, e.Row);
-            if (data != null)
+            if (String.IsNullOrEmpty(fsSODetRow?.POStatus))
             {
-                InventoryItemCostPXExt dataExt = PXCache<InventoryItem>.GetExtension<InventoryItemCostPXExt>(data);
-                if (dataExt.UsrIsSpecialOrderItem.GetValueOrDefault(false))
+                InventoryItem data = (InventoryItem)PXSelectorAttribute.Select<FSAppointmentDet.inventoryID>(e.Cache, e.Row);
+                if (data != null)
                 {
-                    e.NewValue = dataExt.UsrIsSpecialOrderItem.GetValueOrDefault(false);
-                    e.Cancel = true;
+                    InventoryItemCostPXExt dataExt = PXCache<InventoryItem>.GetExtension<InventoryItemCostPXExt>(data);
+                    if (dataExt.UsrIsSpecialOrderItem.GetValueOrDefault(false))
+                    {
+                        e.NewValue = dataExt.UsrIsSpecialOrderItem.GetValueOrDefault(false);
+                        e.Cancel = true;
+                    }
                 }
             }
         }
@@ -40,12 +48,16 @@ namespace PX.SpecialOrderCostAccounting.Ext
 
             FSAppointmentDetCostPXExt fsolineExt = PXCache<FSAppointmentDet>.GetExtension<FSAppointmentDetCostPXExt>(fsoline);
 
-            if (fsolineExt.UsrIsSpecialOrderItem.GetValueOrDefault(false))
+            if (fsolineExt.UsrIsSpecialOrderItem.GetValueOrDefault(false) && (fsoline.POSource == ListField_FSPOSource.PurchaseToAppointment))
             {
-                // Disable editing if PO is created
+                // Disable editing if PO is created and is Purchase to Appointment
                 PXUIFieldAttribute.SetEnabled<FSAppointmentDet.curyUnitCost>(Base.AppointmentDetails.Cache, fsoline, (String.IsNullOrEmpty(fsoline.PONbr)));
                 PXUIFieldAttribute.SetEnabled<FSAppointmentDet.estimatedQty>(Base.AppointmentDetails.Cache, fsoline, (String.IsNullOrEmpty(fsoline.PONbr)));
                 PXUIFieldAttribute.SetEnabled<FSAppointmentDet.actualQty>(Base.AppointmentDetails.Cache, fsoline, (String.IsNullOrEmpty(fsoline.PONbr)));
+            }
+            else if (fsolineExt.UsrIsSpecialOrderItem.GetValueOrDefault(false) && (fsoline.POSource == ListField_FSPOSource.PurchaseToServiceOrder))
+            {
+                PXUIFieldAttribute.SetEnabled<FSAppointmentDet.curyUnitCost>(Base.AppointmentDetails.Cache, fsoline, (String.IsNullOrEmpty(fsoline.PONbr)));
             }
         }
 

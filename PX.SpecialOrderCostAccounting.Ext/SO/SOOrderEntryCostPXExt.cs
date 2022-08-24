@@ -1,4 +1,5 @@
 ﻿using PX.Data;
+using PX.Objects.CS;
 using PX.Objects.IN;
 using PX.Objects.PO;
 using PX.Objects.SO;
@@ -9,6 +10,8 @@ namespace PX.SpecialOrderCostAccounting.Ext
 {
     public class SOOrderEntryCostPXExt : PXGraphExtension<SOOrderEntry>
     {
+        public static bool IsActive() => PXAccess.FeatureInstalled<FeaturesSet.distributionModule>();
+
         public override void Initialize()
         {
             PXUIFieldAttribute.SetVisible<SOLine.curyUnitCost>(Base.Transactions.Cache, null, true);
