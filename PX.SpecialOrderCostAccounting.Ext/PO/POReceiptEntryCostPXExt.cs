@@ -1,6 +1,5 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
+﻿using System.Linq;
+using PX.Common;
 using PX.Data;
 using PX.Objects.CS;
 using PX.Objects.IN;
@@ -25,8 +24,10 @@ namespace PX.SpecialOrderCostAccounting.Ext
 
             decimal? dRctQty = (decimal?)e.NewValue;
             decimal? dRctOldQty = (decimal?)e.OldValue;
+            bool isNewRec = (e.Cache.GetStatus(data).IsIn(PXEntryStatus.Inserted, PXEntryStatus.InsertedDeleted));
+            decimal? dOrigRctQty = (!isNewRec) ? POReceiptLine.PK.Find(Base, data)?.ReceiptQty.GetValueOrDefault(0) : 0m;
 
-            if (dRctOldQty != dRctQty)
+            if (dRctOldQty != dRctQty && data.ReceiptType == POReceiptType.POReceipt)
             {
                 POLine poLinedata = PXSelectReadonly<POLine,
                                     Where<POLine.orderType, Equal<Required<POLine.orderType>>,
@@ -36,11 +37,14 @@ namespace PX.SpecialOrderCostAccounting.Ext
 
                 // Restrict receiving more than ordered
                 if ((poLinedata?.LineType == POLineType.GoodsForDropShip ||
-                         poLinedata?.LineType == POLineType.GoodsForSalesOrder ||
-                         poLinedata?.LineType == POLineType.GoodsForServiceOrder) && 
-                         (dRctQty.GetValueOrDefault(0) + poLinedata.ReceivedQty.GetValueOrDefault(0) > poLinedata.OrderQty.GetValueOrDefault(0)))
+                     poLinedata?.LineType == POLineType.GoodsForSalesOrder ||
+                     poLinedata?.LineType == POLineType.GoodsForServiceOrder))
                 {
-                    throw new PXSetPropertyException<POReceiptLine.receiptQty>(Messages.POReceiptQtyUpdateNotAllowed, PXErrorLevel.Error);
+                    if ((dRctQty.GetValueOrDefault(0) + (poLinedata.ReceivedQty.GetValueOrDefault(0) - dOrigRctQty)) > 
+                        (poLinedata.OrderQty.GetValueOrDefault(0)))
+                    {
+                        throw new PXSetPropertyException<POReceiptLine.receiptQty>(Messages.POReceiptQtyUpdateNotAllowed, PXErrorLevel.Error);
+                    }
                 }
             }
         }
@@ -57,6 +61,7 @@ namespace PX.SpecialOrderCostAccounting.Ext
             if (polineExt.UsrIsSpecialOrderItem == true)
             {
                 PXUIFieldAttribute.SetEnabled<POReceiptLine.curyUnitCost>(e.Cache, prline, false);
+                PXUIFieldAttribute.SetEnabled<POReceiptLineSplit.qty>(Base.splits.Cache, null, false);
             }
         }
 
