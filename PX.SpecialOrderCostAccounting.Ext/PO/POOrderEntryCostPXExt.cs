@@ -533,6 +533,7 @@ namespace PX.SpecialOrderCostAccounting.Ext
                     if (soOrders.Count > 0 && itemsforupdate.Count > 0) { UpdateLinkedSOAndServiceOrder(itemsforupdate, soOrders); }
                     if (Base.Transactions.Cache.Deleted.Count() > 0) { ClearPORerencesFromServiceLineForFreight(Base.Transactions.Cache.Deleted); }                 
                     ts.Complete();
+                    Base.SelectTimeStamp();
                 }
             }
             catch (Exception ex)
