@@ -69,6 +69,9 @@ namespace PX.SpecialOrderCostAccounting.Ext
                             POLine poData = datainfo;
                             FSSODet fssoData = datainfo;
 
+                            // If Special Order Item is not linked to PO
+                            if (datainfo == null) { return; }
+
                             INTranCostPXExt dataExt = PXCache<INTran>.GetExtension<INTranCostPXExt>(data);
                             dataExt.UsrSpecialOrderCost = true;
                             data.UnitCost = poData.UnitCost;
