@@ -86,7 +86,7 @@ namespace PX.SpecialOrderCostAccounting.Ext
 
             SOLineCostPXExt rowExt = row.GetExtension<SOLineCostPXExt>();
             if (String.IsNullOrEmpty(rowExt.UsrPOLinkRef)) { return adapter.Get(); }
-            var linkInfo = rowExt.UsrPOLinkRef.Split('-');
+            var linkInfo = rowExt.UsrPOLinkRef.Split(new char[] { '-' }, 2);
             if (linkInfo.Length != 2) { return adapter.Get(); }
 
             POOrderEntry poGraph = PXGraph.CreateInstance<POOrderEntry>();

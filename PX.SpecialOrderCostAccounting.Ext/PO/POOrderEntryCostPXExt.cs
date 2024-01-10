@@ -345,7 +345,7 @@ namespace PX.SpecialOrderCostAccounting.Ext
 
             POLineCostPXExt rowExt = row.GetExtension<POLineCostPXExt>();
             if (String.IsNullOrEmpty(rowExt.UsrSOLinkRef)) { return adapter.Get(); }
-            var linkInfo = rowExt.UsrSOLinkRef.Split('-');
+            var linkInfo = rowExt.UsrSOLinkRef.Split(new char[] { '-' }, 2);
 
             if (row.LineType == POLineType.GoodsForDropShip || row.LineType == POLineType.GoodsForSalesOrder ||
                 row.LineType == POLineType.NonStockForDropShip || row.LineType == POLineType.NonStockForSalesOrder)
@@ -569,8 +569,8 @@ namespace PX.SpecialOrderCostAccounting.Ext
                 }
                 else
                 {
-                    string soType = linkedSO.RefNbr.Split('-')[0];
-                    string soNbr = linkedSO.RefNbr.Split('-')[1];
+                    string soType = linkedSO.RefNbr.Split(new char[] { '-' }, 2)[0];
+                    string soNbr = linkedSO.RefNbr.Split(new char[] { '-' }, 2)[1];
                     //var polines = items.Where(x => x.GetExtension<POLineCostPXExt>().UsrSOLinkRef == linkedSO.RefNbr &&
                     //                               !x.GetExtension<POLineCostPXExt>().UsrIsSpecialOrderItem.GetValueOrDefault(false));
                     //var polines = items.Where(x => !String.IsNullOrEmpty(x.GetExtension<POLineCostPXExt>().UsrSOLinkRef)  &&
