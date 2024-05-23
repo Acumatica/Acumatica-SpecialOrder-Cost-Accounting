@@ -3,6 +3,7 @@ using PX.Objects.IN;
 using PX.Objects.AR;
 using PX.Objects.SO;
 using PX.Objects.CM;
+using PX.Objects.IN.InventoryRelease;
 
 namespace PX.SpecialOrderCostAccounting.Ext
 {

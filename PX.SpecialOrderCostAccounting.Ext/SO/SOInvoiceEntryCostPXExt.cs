@@ -1,11 +1,11 @@
-﻿using System;
-using PX.Data;
+﻿using PX.Data;
 using PX.Objects.SO;
 using PX.Objects.IN;
 using PX.Objects.AR;
 using PX.Objects.CS;
 using PX.Objects.PO;
 using PX.Objects.FS;
+using System.Collections.Generic;
 
 namespace PX.SpecialOrderCostAccounting.Ext
 {
@@ -13,10 +13,11 @@ namespace PX.SpecialOrderCostAccounting.Ext
     {
         public static bool IsActive() => PXAccess.FeatureInstalled<FeaturesSet.distributionModule>();
 
-        public delegate void BasePostInvoiceDirectLines(INIssueEntry docgraph, ARInvoice invoice, DocumentList<INRegister> list);
+        public delegate void BasePostInvoiceDirectLines(INIssueEntry docgraph, ARInvoice invoice, DocumentList<INRegister> list, List<SOOrderShipment> directShipmentsToCreate);
 
         [PXOverride]
         public virtual void PostInvoiceDirectLines(INIssueEntry docgraph, ARInvoice invoice, DocumentList<INRegister> list,
+                                                    List<SOOrderShipment> directShipmentsToCreate,
                                                     BasePostInvoiceDirectLines BaseInvoke)
         {
             //ServiceManagement Billing via ServiceOrder/Appointment OR direct Credit Memo for Invoice
@@ -101,7 +102,7 @@ namespace PX.SpecialOrderCostAccounting.Ext
                     }
                 }
             });
-            BaseInvoke(docgraph, invoice, list);
+            BaseInvoke(docgraph, invoice, list, directShipmentsToCreate);
         }
     }
 }

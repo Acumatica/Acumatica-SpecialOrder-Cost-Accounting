@@ -1,7 +1,5 @@
-﻿using System;
-using PX.Data;
+﻿using PX.Data;
 using PX.Objects.CR;
-using PX.Objects.CR.Extensions.CRCreateSalesOrder;
 using PX.Objects.IN;
 using PX.Objects.SO;
 
@@ -33,17 +31,17 @@ namespace PX.SpecialOrderCostAccounting.Ext
         {
             PXGraph.InstanceCreated.AddHandler<SOOrderEntry>((graph) =>
             {
-                graph.RowUpdated.AddHandler<SOLine>((cache, eArgs) =>
+                graph.FieldUpdated.AddHandler<SOLine.orderQty>((cache, eArgs) =>
                 {
                     var soLine = (SOLine)eArgs.Row;
-                    InventoryItem item = (InventoryItem)PXSelectorAttribute.Select<SOLine.inventoryID>(cache, soLine);
+                    InventoryItem item = InventoryItem.PK.Find(graph, soLine.InventoryID);
                     if (item != null)
                     {
                         InventoryItemCostPXExt itemExt = PXCache<InventoryItem>.GetExtension<InventoryItemCostPXExt>(item);
                         if (itemExt.UsrIsSpecialOrderItem.GetValueOrDefault())
                         {
                             CROpportunityProducts oppLine = PXResult<CROpportunityProducts>.Current;
-                            cache.SetValueExt<SOLine.curyUnitCost>(soLine, oppLine.CuryUnitCost);
+                            cache.SetValueExt<SOLine.unitCost>(soLine, oppLine.UnitCost);
                         }
                     }
                 });

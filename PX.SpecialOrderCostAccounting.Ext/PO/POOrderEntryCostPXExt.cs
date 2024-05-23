@@ -128,7 +128,7 @@ namespace PX.SpecialOrderCostAccounting.Ext
             if (poline.LineType == POLineType.GoodsForSalesOrder || poline.LineType == POLineType.GoodsForDropShip ||
                 poline.LineType == POLineType.NonStockForDropShip || poline.LineType == POLineType.NonStockForSalesOrder)
             {
-                SOLineSplit3 demandLine = (PXResult<SOLineSplit3>)Base.FixedDemand.View.SelectMultiBound(new object[] { poline }).FirstOrDefault();
+                SOLineSplit3 demandLine = (SOLineSplit3)Base.FixedDemand.View.SelectMultiBound(new object[] { poline }).FirstOrDefault();
                 if (demandLine == null) { return; }
 
                 SOLine solineForUpdate = (SOLine)SOLineLinkForCostUpdate.Select(demandLine.OrderType, demandLine.OrderNbr, demandLine.LineNbr);
@@ -193,7 +193,7 @@ namespace PX.SpecialOrderCostAccounting.Ext
             if (poline.LineType == POLineType.GoodsForSalesOrder || poline.LineType == POLineType.GoodsForDropShip ||
                 poline.LineType == POLineType.NonStockForDropShip || poline.LineType == POLineType.NonStockForSalesOrder)
             {
-                SOLineSplit3 demandLine = (PXResult<SOLineSplit3>)Base.FixedDemand.View.SelectMultiBound(new object[] { poline }).FirstOrDefault();
+                SOLineSplit3 demandLine = (SOLineSplit3)Base.FixedDemand.View.SelectMultiBound(new object[] { poline }).FirstOrDefault();
                 if (demandLine == null) { return; }
 
                 SOLine solineForUpdate = (SOLine)SOLineLinkForCostUpdate.Select(demandLine.OrderType, demandLine.OrderNbr, demandLine.LineNbr);
@@ -614,9 +614,8 @@ namespace PX.SpecialOrderCostAccounting.Ext
                             }
                             else
                             {
-                                foreach (PXResult<SOLineSplit3, INItemPlan> fxddemandLine in lidemands)
+                                foreach (SOLineSplit3 demandLine in lidemands)
                                 {
-                                    SOLineSplit3 demandLine = fxddemandLine;
                                     if (!(demandLine.OrderType == soType && demandLine.OrderNbr == soNbr)) { continue; }
                                     soGraph.Transactions.Current = soGraph.Transactions.Select().RowCast<SOLine>().Where(x => x.LineNbr == demandLine.LineNbr).FirstOrDefault();
                                     if (polineExt.UsrDeLink.GetValueOrDefault(false))
@@ -639,7 +638,7 @@ namespace PX.SpecialOrderCostAccounting.Ext
                                             soGraph.Transactions.Current.CuryUnitCost != poline.CuryUnitCost)
                                         {
                                             bChanged = true;
-                                            soGraph.Transactions.Current.CuryUnitCost = poline.CuryUnitCost;
+                                            soGraph.Transactions.SetValueExt<SOLine.unitCost>(soGraph.Transactions.Current, poline.CuryUnitCost);
                                             soGraph.Transactions.Current = soGraph.Transactions.Update(soGraph.Transactions.Current);
                                             soGraph.splits.Current = soGraph.splits.Select().RowCast<SOLineSplit>().Where(x => x.SplitLineNbr == demandLine.SplitLineNbr && x.LineNbr == demandLine.LineNbr).FirstOrDefault();
                                             soGraph.splits.Current.Qty = poline.OrderQty;

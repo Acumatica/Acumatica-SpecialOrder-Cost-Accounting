@@ -58,14 +58,6 @@ namespace PX.SpecialOrderCostAccounting.Ext
             PXUIFieldAttribute.SetEnabled<SOLine.orderQty>(Base.Transactions.Cache, soline, !isPOCreated);
         }
 
-        protected virtual void _(Events.FieldUpdated<SOLine.pOCreate> e, PXFieldUpdated BaseInvoke)
-        {
-            if (BaseInvoke != null) { BaseInvoke(e.Cache, e.Args); }
-
-            SOLine row = (SOLine)e.Row;
-            if (row != null && !row.POCreate.GetValueOrDefault(false)) { e.Cache.SetDefaultExt<SOLine.curyUnitCost>(row); }
-        }
-
         #region Ref Link to PO
 
         [PXMergeAttributes(Method = MergeMethod.Append)]
