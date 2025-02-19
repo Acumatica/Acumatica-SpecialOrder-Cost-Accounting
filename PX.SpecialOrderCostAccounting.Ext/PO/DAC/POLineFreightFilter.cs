@@ -6,7 +6,7 @@ namespace PX.SpecialOrderCostAccounting.Ext
 {
     [Serializable]
     [PXHidden]
-    public class AddFreightParams : IBqlTable
+    public class AddFreightParams : PXBqlTable, IBqlTable
     {
         public abstract class freightAmount : PX.Data.BQL.BqlDecimal.Field<freightAmount> { }
 

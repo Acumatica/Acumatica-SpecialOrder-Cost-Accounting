@@ -302,8 +302,7 @@ namespace PX.SpecialOrderCostAccounting.Ext
 
             POLineCostPXExt polineExt = PXCache<POLine>.GetExtension<POLineCostPXExt>(poline);
             ViewServiceOrderDemand.SetVisible(polineExt.UsrIsServiceOrderLine.GetValueOrDefault(false));
-            PurchaseToSOLinksExt posoLinkGraph = Base.GetExtension<PurchaseToSOLinksExt>();
-            posoLinkGraph?.viewDemand?.SetVisible(polineExt.UsrIsNonServiceOrderLine.GetValueOrDefault(false));
+            Base.viewDemand.SetVisible(polineExt.UsrIsNonServiceOrderLine.GetValueOrDefault(false));
 
             bool bAllowEdit = !(polineExt.UsrSOLinkRef == Messages.ViewMultiple);
             PXUIFieldAttribute.SetEnabled<POLine.orderQty>(e.Cache, poline, !(!bAllowEdit || polineExt.UsrIsFreight.GetValueOrDefault(false)));
@@ -317,7 +316,7 @@ namespace PX.SpecialOrderCostAccounting.Ext
 
         #region Link To SO/ServiceOrder
         public PXAction<POOrder> ViewServiceOrderDemand;
-        [PXUIField(DisplayName = PX.Objects.PO.Messages.ViewDemand,
+        [PXUIField(DisplayName = PX.Objects.PO.Messages.ViewAllDemand,
                    MapEnableRights = PXCacheRights.Select, MapViewRights = PXCacheRights.Select)]
         [PXLookupButton()]
         public virtual IEnumerable viewServiceOrderDemand(PXAdapter adapter)

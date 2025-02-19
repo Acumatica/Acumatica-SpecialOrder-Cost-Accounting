@@ -6,6 +6,7 @@ using PX.Objects.CS;
 using PX.Objects.PO;
 using PX.Objects.FS;
 using System.Collections.Generic;
+using PX.Objects.FS.DAC;
 
 namespace PX.SpecialOrderCostAccounting.Ext
 {
@@ -43,7 +44,7 @@ namespace PX.SpecialOrderCostAccounting.Ext
 
                     if (arData != null)
                     {
-                        FSARTran arDataExt = FSARTran.PK.Find(Base, arData.TranType, arData.RefNbr, arData.LineNbr);
+                        FSxARTran arDataExt = PXCache<ARTran>.GetExtension<FSxARTran>(arData);
 
                         if (arDataExt != null)
                         {

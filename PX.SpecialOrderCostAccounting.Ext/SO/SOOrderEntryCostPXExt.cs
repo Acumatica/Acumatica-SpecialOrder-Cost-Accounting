@@ -66,7 +66,7 @@ namespace PX.SpecialOrderCostAccounting.Ext
 
         public PXAction<SOOrder> ViewLinkedPORef;
 
-        [PXUIField(DisplayName = PX.Objects.PO.Messages.ViewDemand,
+        [PXUIField(DisplayName = PX.Objects.PO.Messages.ViewAllDemand,
                    MapEnableRights = PXCacheRights.Select, MapViewRights = PXCacheRights.Select)]
         [PXLookupButton]
         public virtual IEnumerable viewLinkedPORef(PXAdapter adapter)

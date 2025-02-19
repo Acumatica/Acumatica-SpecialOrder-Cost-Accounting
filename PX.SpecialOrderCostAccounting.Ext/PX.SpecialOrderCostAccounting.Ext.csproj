@@ -4,19 +4,19 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="PX.Common">
-      <HintPath>..\..\..\Sites\AcmASG23R2\Bin\PX.Common.dll</HintPath>
+      <HintPath>..\..\..\Sites\AcmASG24R2\Bin\PX.Common.dll</HintPath>
     </Reference>
     <Reference Include="PX.Common.Std">
-      <HintPath>..\..\..\Sites\AcmASG23R2\Bin\PX.Common.Std.dll</HintPath>
+      <HintPath>..\..\..\Sites\AcmASG24R2\Bin\PX.Common.Std.dll</HintPath>
     </Reference>    
     <Reference Include="PX.Data">
-      <HintPath>..\..\..\Sites\AcmASG23R2\Bin\PX.Data.dll</HintPath>
+      <HintPath>..\..\..\Sites\AcmASG24R2\Bin\PX.Data.dll</HintPath>
     </Reference>
     <Reference Include="PX.Objects">
-      <HintPath>..\..\..\Sites\AcmASG23R2\Bin\PX.Objects.dll</HintPath>
+      <HintPath>..\..\..\Sites\AcmASG24R2\Bin\PX.Objects.dll</HintPath>
     </Reference>
     <Reference Include="PX.Objects.FS">
-      <HintPath>..\..\..\Sites\AcmASG23R2\Bin\PX.Objects.FS.dll</HintPath>
+      <HintPath>..\..\..\Sites\AcmASG24R2\Bin\PX.Objects.FS.dll</HintPath>
     </Reference>
   </ItemGroup>
 </Project>
