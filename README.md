@@ -20,6 +20,7 @@ Functionality included in this extension:
 * Acumatica 2020 R2 (20.213.0026 or higher) [2020 R2 Source and Deployment Package](https://github.com/Acumatica/Acumatica-SpecialOrder-Cost-Accounting/tree/2020R2)
 * Acumatica 2021 R2 (21.217.0035 or higher) [2021 R2 Source and Deployment Package](https://github.com/Acumatica/Acumatica-SpecialOrder-Cost-Accounting/tree/2021R2)
 * Acumatica 2023 R2 (23.212.0024 or higher) [2023 R2 Source and Deployment Package](https://github.com/Acumatica/Acumatica-SpecialOrder-Cost-Accounting/tree/2023R2)
+* Acumatica 2024 R2 (24.208.0020 or higher) [2024 R2 Source and Deployment Package](https://github.com/Acumatica/Acumatica-SpecialOrder-Cost-Accounting/tree/2024R2)
   
 Quick Start
 -----------
